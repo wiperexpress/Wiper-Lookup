@@ -52,7 +52,6 @@ function ResultsForSegment({ data, segment }) {
     try { setSel(JSON.parse(localStorage.getItem('wx_sel_' + segment)) || {}); } catch { setSel({}); }
   }, [segment]);
 
-  // Subscribe to selector changes via a simple custom event
   React.useEffect(() => {
     const h = (e) => { if (e.detail.segment === segment) setSel(e.detail.sel); };
     window.addEventListener('wx:select', h);
@@ -253,9 +252,7 @@ function HelpCard() {
       <div style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.dim, marginBottom: 8 }}>Tips</div>
       <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: C.mute, lineHeight: 1.8 }}>
         <li>Type in any dropdown to search</li>
-        <li>Click a SKU to open its Shopify product page</li>
         <li>Click <code style={{ fontFamily: F.mono, fontSize: 11, color: C.blue }}>⧉</code> to copy a SKU</li>
-        <li>Dashed pill = SKU not yet mapped (search fallback)</li>
         <li>Selections persist per segment</li>
       </ul>
     </div>
@@ -266,7 +263,6 @@ function TweakPanel({ tweaks, setTweaks }) {
   const apply = (k, v) => {
     const next = { ...tweaks, [k]: v };
     setTweaks(next);
-    // Keep live window.TWEAK_DEFAULTS in sync so helpers (e.g. shopifyUrlFor) read fresh values
     if (window.TWEAK_DEFAULTS) window.TWEAK_DEFAULTS[k] = v;
     window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [k]: v } }, '*');
   };
