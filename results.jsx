@@ -71,8 +71,8 @@ function AutoResults({ data, row }) {
   const brandRows = [
     { name: 'Autotex M5', tone: 'Conventional', front: [fl && `M5-${fl}`, fr && `M5-${fr}`], rec: bladeType === 'Conventional' },
     { name: 'Autotex M6', tone: 'Premium Conventional', front: [fl && `M6-${fl}`, fr && `M6-${fr}`] },
-    { name: 'Autotex CLX', tone: 'Beam', front: [fl && `CLX-${fl}`, fr && `CLX-${fr}`], rec: bladeType === 'Beam' },
-    { name: 'Autotex CLX-SP', tone: 'Premium Beam', front: [fl && `CLXSP-${fl}`, fr && `CLXSP-${fr}`] },
+    { name: 'Clix Original', tone: 'Beam', front: [fl && `CLX-${fl}`, fr && `CLX-${fr}`], rec: bladeType === 'Beam' },
+    { name: 'Clix Silicone+', tone: 'Premium Beam', front: [fl && `CLXSP-${fl}`, fr && `CLXSP-${fr}`] },
   ];
 
 
@@ -304,7 +304,7 @@ function VehicleHeader({ year, make, model, type, badge }) {
 
 function EmptyState({ segment }) {
   const copy = {
-    auto: ['Passenger vehicle lookup', 'Select year, make, and model to pull OEM blade lengths and Autotex SKUs across the M5, M6, CLX, and CLX-SP lines.'],
+    auto: ['Passenger vehicle lookup', 'Select year, make, and model to pull OEM blade lengths and part numbers across Autotex M5, Autotex M6, Clix Original, and Clix Silicone+.'],
     hd: ['Heavy-duty lookup', 'Transit buses, motorcoaches, and Class 7–8 vehicles. Maps OEM Trico part numbers to HD blade families.'],
     rv: ['RV lookup', 'Motorhomes and coaches indexed by make and model series with year-range fitment.'],
     utv: ['UTV / Side-by-side lookup', 'Kit-based fitment for powersports. Includes motor, arm, blade, harness, and full wiper kit components.'],
@@ -359,8 +359,8 @@ function HdResults({ data, row }) {
     hasHD && { name: 'Autotex HD', tone: 'Heavy-duty primary', front: [hdDS, hdPS], rec: true },
     { name: 'Autotex M5', tone: 'Conventional', front: [m5DS, m5PS], rec: !hasHD && !!m5DS },
     { name: 'Autotex M6', tone: 'Premium Conventional', front: [m6DS, m6PS] },
-    { name: 'Autotex CLX', tone: 'Beam', front: [clxDS, clxPS] },
-    { name: 'Autotex CLX-SP', tone: 'Premium Beam', front: [clxspDS, clxspPS] },
+    { name: 'Clix Original', tone: 'Beam', front: [clxDS, clxPS] },
+    { name: 'Clix Silicone+', tone: 'Premium Beam', front: [clxspDS, clxspPS] },
   ].filter(Boolean);
   const anyMapped = rows.some(r => r.front[0]);
   return (
