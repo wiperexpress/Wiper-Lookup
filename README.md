@@ -1,6 +1,6 @@
 # Wiper Express — Fitment Lookup
 
-A standalone vehicle-fitment lookup for Wiper Express. Pick a vehicle (Auto / Heavy-Duty / UTV) and get the right Autotex wiper SKUs for every blade line (M5, M6, CLX, CLX-SP, HD) plus wiper motors and UTV kits. SKUs link out to the Shopify product page when mapped, and fall back to a store search otherwise.
+A standalone vehicle-fitment lookup for Wiper Express. Pick a vehicle (Auto / Heavy-Duty / UTV) and get the right Autotex wiper part numbers for every blade line (M5, M6, CLX, CLX-SP, HD) plus wiper motors and UTV kits. Each result also shows product cards for the matching Autotex blade families with image, spec line, and short description. No outbound product links — this is a pure reference tool.
 
 No build step. No framework. Just static files served by Vercel.
 
@@ -15,8 +15,8 @@ composition.jsx         # Main layout, segment routing, tweaks panel
 vercel.json             # Static hosting + cache headers
 assets/                 # Logos
 data/
-  packed.json           # ~2.9 MB — all fitment rows (Auto/HD/UTV + Motors)
-  shopify-skus.json     # SKU → product-handle map for deep linking
+  packed.json           # ~3.0 MB — all fitment rows (Auto/HD/UTV + Motors)
+  product-info.json     # ~270 KB — 11 product families, base64-embedded hero images
 ```
 
 ## Local dev

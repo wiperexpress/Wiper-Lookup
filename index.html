@@ -13,6 +13,11 @@ window.TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "accent": "#0057FF",
   "density": "regular"
 }/*EDITMODE-END*/;
+window.__WX_PRODUCT_INFO = {};
+fetch('data/product-info.json').then(r => r.json()).then(j => {
+  window.__WX_PRODUCT_INFO = j;
+  window.dispatchEvent(new Event('wx-product-info-ready'));
+}).catch(() => {});
 </script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
