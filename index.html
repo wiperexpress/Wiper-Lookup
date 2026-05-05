@@ -765,7 +765,11 @@ function EmptyState({ segment }) {
 // ---------------- HD RESULTS ----------------
 function HdResults({ data, row }) {
   if (!row) return <EmptyState segment="hd" />;
-  const [year, mkIdx, model, typeIdx, trico, ds, ps, connIdx, hdDS, hdPS, motor] = row;
+  // Schema: [y, mk, md, ty, trico, ds, ps, conn, hd_ds, hd_ps, motor,
+  //          M5_ds, M5_ps, M6_ds, M6_ps, CLX_ds, CLX_ps, CLXSP_ds, CLXSP_ps]
+  const [year, mkIdx, model, typeIdx, trico, ds, ps, connIdx,
+         hdDS, hdPS, motor,
+         m5DS, m5PS, m6DS, m6PS, clxDS, clxPS, clxspDS, clxspPS] = row;
   const make = data.hd.makes[mkIdx];
   const vtype = data.hd.types[typeIdx];
   const conn = data.hd.conns[connIdx];
@@ -775,9 +779,19 @@ function HdResults({ data, row }) {
     const hit = data.motors.find(m => m[0] === year && m[1] === make && m[2] === model);
     return hit ? hit[3] : '';
   })();
-  const rows = [
-    { name: 'Autotex HD', tone: 'Heavy-duty primary', front: [hdDS, hdPS], rec: !!hdDS },
+  // Build the full blade-line matrix. Heavy-duty rows can carry 78-series HD,
+  // standard M5/M6 conventional, Clix Original, and Clix Silicone+ — render
+  // every line that has a SKU. The 78-series stays "primary" when present.
+  const allRows = [
+    { name: 'Autotex M5',     tone: 'Conventional',          front: [m5DS, m5PS],     rec: !!m5DS && !hdDS },
+    { name: 'Autotex M6',     tone: 'Premium Conventional',  front: [m6DS, m6PS] },
+    { name: 'Clix Original',  tone: 'Beam',                  front: [clxDS, clxPS] },
+    { name: 'Clix Silicone+', tone: 'Premium Beam',          front: [clxspDS, clxspPS] },
+    { name: 'Autotex HD',     tone: 'Heavy-duty primary',    front: [hdDS, hdPS],     rec: !!hdDS },
   ];
+  const rows = allRows.filter(r => r.front[0] || r.front[1]);
+  const anyMapped = rows.length > 0;
+  const sectionTag = hdDS ? 'AUTOTEX HD' : (anyMapped ? `${rows.length} LINE${rows.length > 1 ? 'S' : ''}` : 'NOT MAPPED');
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <VehicleHeader year={year} make={make} model={model} type={vtype} badge={conn || 'HD'} />
@@ -791,14 +805,14 @@ function HdResults({ data, row }) {
         </div>
       </Panel>
       <Panel style={{ padding: 22 }}>
-        <SectionLabel right={hdDS ? 'AUTOTEX HD' : 'NOT MAPPED'}>Front SKUs — DS / PS</SectionLabel>
-        {!hdDS ? (
+        <SectionLabel right={sectionTag}>Front SKUs — DS / PS</SectionLabel>
+        {!anyMapped ? (
           <div style={{
             marginTop: 14, padding: '14px 16px', borderTop: `1px solid ${C.line}`,
             fontFamily: F.mono, fontSize: 11, color: C.mute, letterSpacing: '0.04em',
             background: C.surface, borderRadius: 4,
           }}>
-            ○ No Autotex HD blade mapped for this fitment. Contact sales for cross-reference.
+            ○ No Autotex blade mapped for this fitment. Contact sales for cross-reference.
           </div>
         ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -817,7 +831,7 @@ function HdResults({ data, row }) {
                 <td style={tdStyle()}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontFamily: F.display, fontSize: 14, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{r.name}</span>
-                    {r.rec && <span style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: '0.08em', background: C.blue, color: C.white, padding: '2px 7px', borderRadius: 3 }}>PRIMARY</span>}
+                    {r.rec && <span style={{ fontFamily: F.mono, fontSize: 9, letterSpacing: '0.08em', background: C.blue, color: C.white, padding: '2px 7px', borderRadius: 3 }}>{r.name === 'Autotex HD' ? 'PRIMARY' : 'RECOMMENDED'}</span>}
                   </div>
                 </td>
                 <td style={tdStyle()}><span style={{ fontSize: 12, color: C.mute }}>{r.tone}</span></td>
@@ -1188,12 +1202,20 @@ function hdBladePrefix(sku) {
   return m ? m[1] : null;
 }
 function hdProductCodes(row) {
-  const hdDS = row[8], hdPS = row[9];
+  // Schema: [..., 8:hd_ds, 9:hd_ps, 10:motor,
+  //          11:M5_ds, 12:M5_ps, 13:M6_ds, 14:M6_ps,
+  //          15:CLX_ds, 16:CLX_ps, 17:CLXSP_ds, 18:CLXSP_ps]
   const codes = [];
-  for (const s of [hdDS, hdPS]) {
+  // 78-series HD families come from hd_ds / hd_ps prefix
+  for (const s of [row[8], row[9]]) {
     const p = hdBladePrefix(s);
     if (p && ['71','72','74','78'].includes(p)) codes.push(p);
   }
+  // Standard families from explicit per-brand columns
+  if (row[11] || row[12]) codes.push('M5');
+  if (row[13] || row[14]) codes.push('M6');
+  if (row[15] || row[16]) codes.push('CLX');
+  if (row[17] || row[18]) codes.push('CLX-SP');
   return codes;
 }
 function utvProductCodes(r) {
