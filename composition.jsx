@@ -31,7 +31,7 @@ function App() {
       <TopBar segment={segment} onSegment={setSegment} />
       <div style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '32px', gap: 28, alignItems: 'flex-start' }}>
         <div style={{ width: 340, flexShrink: 0, position: 'sticky', top: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <Selector data={data} segment={segment} tweaks={tweaks} />
+          <Selector data={data} segment={segment} onSegment={setSegment} tweaks={tweaks} />
           <CoverageCard data={data} segment={segment} />
           <HelpCard />
         </div>
@@ -77,7 +77,7 @@ function ResultsForSegment({ data, segment }) {
   return null;
 }
 
-function Selector({ data, segment, tweaks }) {
+function Selector({ data, segment, onSegment, tweaks }) {
   const [sel, setSel] = React.useState(() => {
     try { return JSON.parse(localStorage.getItem('wx_sel_' + segment)) || {}; } catch { return {}; }
   });
@@ -92,15 +92,46 @@ function Selector({ data, segment, tweaks }) {
   const update = (patch) => setSel(s => ({ ...s, ...patch }));
   const reset = () => setSel({});
 
+  const segmentButtons = [
+    { id: 'auto', label: 'Auto' },
+    { id: 'hd',   label: 'Heavy-Duty' },
+    { id: 'utv',  label: 'UTV' },
+  ];
+
   return (
     <div style={{
       background: C.white, border: `1px solid ${C.line}`, borderRadius: 8,
       padding: 24, display: 'flex', flexDirection: 'column', gap: 16,
     }}>
+      <div>
+        <div style={{ fontFamily: F.mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.dim, marginBottom: 8 }}>01 · Vehicle Category</div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {segmentButtons.map(s => {
+            const active = segment === s.id;
+            return (
+              <button key={s.id}
+                onClick={() => onSegment && onSegment(s.id)}
+                style={{
+                  flex: 1, padding: '12px 8px', cursor: 'pointer',
+                  background: active ? C.blue : C.white,
+                  color: active ? C.white : C.ink,
+                  border: `1px solid ${active ? C.blue : C.line}`,
+                  borderRadius: 6,
+                  fontFamily: F.display, fontSize: 13, fontWeight: 700,
+                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                  transition: 'background .15s, border-color .15s, color .15s',
+                }}>
+                {s.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ fontFamily: F.mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.dim, marginBottom: 4 }}>01 · Vehicle</div>
-          <div style={{ fontFamily: F.display, fontSize: 22, fontWeight: 700, letterSpacing: '0.02em' }}>{{ auto: 'Find by YMM', hd: 'Heavy-Duty YMM', rv: 'RV Coach', utv: 'UTV Platform' }[segment]}</div>
+          <div style={{ fontFamily: F.mono, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.dim, marginBottom: 4 }}>02 · Find by Vehicle</div>
+          <div style={{ fontFamily: F.display, fontSize: 22, fontWeight: 700, letterSpacing: '0.02em' }}>{{ auto: 'Year · Make · Model', hd: 'Type · Year · Make · Model', rv: 'Make · Series · Variant', utv: 'Make · Model · Year' }[segment]}</div>
         </div>
         <button onClick={reset} style={{
           border: `1px solid ${C.line}`, background: 'transparent', cursor: 'pointer',
