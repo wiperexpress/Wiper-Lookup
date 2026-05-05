@@ -134,12 +134,7 @@ function utvFind(data, make, model, year) {
 // -----------------------------------------------------------------------------
 // Top bar
 // -----------------------------------------------------------------------------
-function TopBar({ segment, onSegment }) {
-  const segments = [
-    { id: 'auto', label: 'Auto', sub: 'Passenger / Light truck' },
-    { id: 'hd', label: 'Heavy-Duty', sub: 'Transit, coach, commercial' },
-    { id: 'utv', label: 'UTV', sub: 'Side-by-side, powersports' },
-  ];
+function TopBar() {
   return (
     <header style={{
       background: C.black, color: C.white,
@@ -147,28 +142,14 @@ function TopBar({ segment, onSegment }) {
     }}>
       <div style={{
         display: 'flex', alignItems: 'center',
-        padding: '0 32px', height: 72, gap: 48,
+        padding: '0 32px', height: 72, gap: 24,
       }}>
         <Logo />
-        <div style={{
-          display: 'flex', gap: 4, alignItems: 'stretch', alignSelf: 'flex-end',
-        }}>
-          {segments.map(s => (
-            <button key={s.id}
-              onClick={() => onSegment(s.id)}
-              style={{
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                padding: '8px 20px 14px', color: segment === s.id ? C.white : 'rgba(255,255,255,0.45)',
-                fontFamily: F.display, fontSize: 14, fontWeight: 600,
-                letterSpacing: '0.08em', textTransform: 'uppercase',
-                borderBottom: `2px solid ${segment === s.id ? C.blue : 'transparent'}`,
-                transition: 'color .15s, border-color .15s',
-              }}>
-              {s.label}
-            </button>
-          ))}
-        </div>
         <div style={{ flex: 1 }} />
+        <span style={{
+          fontFamily: F.mono, fontSize: 10, letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)',
+        }}>The Wiper Experts</span>
       </div>
     </header>
   );
